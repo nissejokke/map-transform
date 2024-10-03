@@ -1,0 +1,15 @@
+{
+  "categories": [
+    {
+      "id": "c1",
+      "title": "Category 1"
+    }
+  ],
+  "products": [
+    {
+      "id": "0",
+      "title": "Product 0",
+      "description": "Description for product 0"
+    }
+  ]
+}
