@@ -9,6 +9,10 @@ const data = {
         id: i.toString(),
         title: 'Product ' + i,
         description: 'Description for product ' + i
-    }))
+    })),
+    culture: {
+        code: 'sv-se'
+    },
+    created: "2024-10-04T19:54:00.000Z"
 };
 writeFileSync('data.json', JSON.stringify(data, null, 2));
