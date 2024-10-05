@@ -3,21 +3,32 @@ import fs from 'node:fs';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { stringer } from 'stream-json/Stringer';
-import { transform } from './transform';
+import { transformObject } from '../transform';
+import { ignore } from 'stream-json/filters/Ignore';
 
 async function run() {
   let counter = 0;
 
   await new Promise((resolve, reject) => {
     const pipeline = chain([
-      fs.createReadStream('data.json'),
+      fs.createReadStream('example/data.json'),
       parser({ streamKeys: false, streamStrings: false, streamNumbers: false }),
-      transform<any>({
+      ignore({
+        filter: /\bculture\b/i
+      }),
+      transformObject<any>({
         mapFn: (obj, path) => {
           if (path === 'categories')
-            return { id: obj.id + '!', title: obj.title, description: 'Noo' };
-          else if (path === 'products')
-            return { id: obj.id + ' ' + obj.id, title: obj.title };
+            return {
+              action: 'replace', value: { id: obj.id + '!', title: obj.title, description: 'Noo' }
+            };
+          else if (path === 'products') {
+            if (obj.id === '1')
+              return { action: 'replace', value: undefined };
+            return { action: 'replace', value: { id: obj.id + ' ' + obj.id, title: obj.title } };
+          }
+          else
+            return { action: 'keep' };
         }
       }),
       data => {
@@ -27,7 +38,7 @@ async function run() {
       },
       stringer({ useValues: true }),
       // zlib.createGzip(),
-      fs.createWriteStream('result.json'),
+      fs.createWriteStream('example/result.json'),
     ]);
 
     pipeline.on('end', resolve);

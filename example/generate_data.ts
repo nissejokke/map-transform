@@ -5,7 +5,7 @@ const data = {
         id: 'c1',
         title: 'Category 1'
     }],
-    products: new Array(1).fill(0).map((p, i) => ({
+    products: new Array(2).fill(0).map((p, i) => ({
         id: i.toString(),
         title: 'Product ' + i,
         description: 'Description for product ' + i
@@ -15,4 +15,4 @@ const data = {
     },
     created: "2024-10-04T19:54:00.000Z"
 };
-writeFileSync('data.json', JSON.stringify(data, null, 2));
+writeFileSync('example/data.json', JSON.stringify(data, null, 2));

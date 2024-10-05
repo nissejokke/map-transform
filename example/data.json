@@ -10,6 +10,11 @@
       "id": "0",
       "title": "Product 0",
       "description": "Description for product 0"
+    },
+    {
+      "id": "1",
+      "title": "Product 1",
+      "description": "Description for product 1"
     }
   ],
   "culture": {

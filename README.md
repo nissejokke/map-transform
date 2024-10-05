@@ -1,6 +1,6 @@
-# Json transform stream complex json
+# Custom stream-json transform
 
-(Work in progress)
+Custom transform filter that can transform different objects in a json.
 
 1. Reads data.json as a read stream
 2. stream-json parses json into stream of tokens
@@ -19,4 +19,6 @@ Creates result.json
 
 ## Todo
 
-- [ ] Support removing objects and properties
+- [X] Support removing objects and properties
+    - Objects in array can be removed by return undefined
+    - Object properties can't be removed, use stream-json ignore filter to ignore them before passing to transform 
