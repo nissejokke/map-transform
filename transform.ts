@@ -32,12 +32,12 @@ export function transformObject<T>(args: {
             if (chunk.name === 'keyValue' && objectDepth === 1) path = chunk.value;
 
             if (!recordMode) {
-                if (chunk.name === 'startObject' && 
-                    objectDepth === 2) {
+                if (chunk.name === 'startObject' && objectDepth === 2) {
                     recordMode = true;
                 }
             }
 
+            // in recordMode, chunks are stored in buffer instead of passed along
             if (recordMode) {
                 if (chunk.name === 'endObject' && objectDepth === 1) {
                     recordMode = false;
@@ -46,9 +46,8 @@ export function transformObject<T>(args: {
                 buffer.push(chunk);
 
                 if (!recordMode && buffer.length) {
-                    // console.log('yey we got an object');
-                    // console.log(buffer);
-
+                    // encountered en of object, let's assemble the tokens into an object and
+                    // pass it to mapFn
                     const obj = await assembleArrayStream<T>(buffer);
                     const result = args.mapFn(obj, path);
                     let newbuffer;
@@ -60,7 +59,7 @@ export function transformObject<T>(args: {
                             newbuffer = [];
                         else if (value === null) 
                             newbuffer = [{ name: 'nullValue', value: null }];
-                        else throw new Error('Unknown return value ' + value + ' from mapFn');
+                        else throw new Error('Unhandled return value ' + value + ' from mapFn');
                     }
                     else
                         newbuffer = buffer;

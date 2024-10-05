@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "generate-data": "tsx example/generate_data.ts",
     "example": "tsx example/stream.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Johan",
   "license": "ISC",
   "description": "",
   "dependencies": {

@@ -13,6 +13,7 @@ const data = {
     culture: {
         code: 'sv-se'
     },
-    created: "2024-10-04T19:54:00.000Z"
+    created: "2024-10-04T19:54:00.000Z",
+    version: 2
 };
 writeFileSync('example/data.json', JSON.stringify(data, null, 2));

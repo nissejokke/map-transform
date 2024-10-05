@@ -9,10 +9,10 @@ Custom transform filter that can transform different objects in a json.
 5. stream-json stringer assembles tokens into writable stream
 6. Writes to result.json
 
-## Running
+## Running example
 
 ```
- npm start
+npm run generate-data && npm run example
 ```
 
 Creates result.json

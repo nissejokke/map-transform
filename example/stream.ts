@@ -23,6 +23,7 @@ async function run() {
               action: 'replace', value: { id: obj.id + '!', title: obj.title, description: 'Noo' }
             };
           else if (path === 'products') {
+            // removes product with id 1
             if (obj.id === '1')
               return { action: 'replace', value: undefined };
             return { action: 'replace', value: { id: obj.id + ' ' + obj.id, title: obj.title } };
