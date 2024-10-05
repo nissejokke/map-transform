@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { memoryUsage } from 'process';
 
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
@@ -49,5 +50,13 @@ async function run() {
 }
 
 (async () => {
+  // const interval = setInterval(() => {
+  //   for (const [key,value] of Object.entries(memoryUsage())){
+  //     console.log(`Memory usage by ${key}, ${value/1000000}MB `)
+  //   }
+  //   console.log();
+  // }, 100);
+
   await run();
+  // clearInterval(interval);
 })();
