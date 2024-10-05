@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
-import { transformObject } from '../transform';
+import { map } from '../transform';
 import { Readable } from 'stream';
 import Asm from 'stream-json/Assembler';
 
@@ -14,33 +14,56 @@ describe('transform', () => {
                 Readable.from([JSON.stringify({
                     products: [{
                         id: 1,
-                        title: 'title 1'
+                        title: 'title 1',
+                        description: 'description for product 1'
                     }, {
                         id: 2,
-                        title: 'title 2'
+                        title: 'title 2',
+                        description: 'description for product 2'
+                    }, {
+                        id: 3,
+                        title: 'title 3',
+                        description: 'description for product 3'
                     }],
-                    version: 1
+                    version: 1,
+                    created: "2024-10-05T00:00:00",
+                    enabled: true,
+                    latest: false,
+                    createdBy: null,
+                    updatedBy: undefined
                 })]),
                 parser({ streamKeys: false, streamStrings: false, streamNumbers: false, streamValues: false }),
-                transformObject<any>({
-                    mapFn: (obj, path) => {
+                map<any>({
+                    mapFn: (value, path) => {
                         if (path === 'products') {
-                            if (obj.id === 1)
+                            if (value.id === 1)
                                 return { action: 'replace', value: undefined };
+                            else if (value.id === 3)
+                                return { action: 'replace', value: null };
                             return {
                                 action: 'replace', value: {
-                                    id: obj.id, title: obj.title + '!'
+                                    id: value.id, title: value.title + '!'
                                 }
                             };
                         }
                         else if (path === 'version') {
-                            return { action: 'replace', value: obj + 1 };
+                            return { action: 'replace', value: value + 1 };
+                        } else if (path === 'created') {
+                            return { action: 'replace', value: value + '.000Z' };
+                        } else if (path === 'enabled') {
+                            return { action: 'replace', value: !value };
+                        } else if (path === 'latest') {
+                            return { action: 'replace', value: !value };
+                        } else if (path === 'createdBy') {
+                            return { action: 'replace', value: 'user' };
                         } else
-                            return { action: 'keep' };
+                            return { action: 'no action' };
                     }
                 }),
                 // not sure why this is needed
-                data => data,
+                data => {
+                    return data;
+                }
             ]);
 
             const asm = Asm.connectTo(pipeline);
@@ -58,9 +81,13 @@ describe('transform', () => {
         assert.deepEqual(result, {
             products: [{
                 id: '2',
-                title: 'title 2!'
-            }],
-            version: 1
+                title: 'title 2!',
+            }, null],
+            version: 2,
+            created: "2024-10-05T00:00:00.000Z",
+            enabled: false,
+            latest: true,
+            createdBy: 'user'
         })
 
     });

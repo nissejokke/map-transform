@@ -5,7 +5,7 @@ const data = {
         id: 'c1',
         title: 'Category 1'
     }],
-    products: new Array(2).fill(0).map((p, i) => ({
+    products: new Array(20).fill(0).map((p, i) => ({
         id: i.toString(),
         title: 'Product ' + i,
         description: 'Description for product ' + i

@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "generate-data": "tsx example/generate_data.ts",
-    "example": "tsx example/stream.ts",
-    "test": "npx mocha --extension spec.ts"
+    "example": "tsx example/example.ts",
+    "test": "npx mocha --extension spec.ts",
+    "test:watch": "npx mocha --extension spec.ts --watch"
   },
   "author": "Johan",
   "license": "ISC",

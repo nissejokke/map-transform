@@ -4,7 +4,7 @@ import { memoryUsage } from 'process';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { stringer } from 'stream-json/Stringer';
-import { transformObject } from '../transform';
+import { map } from '../transform';
 import { ignore } from 'stream-json/filters/Ignore';
 
 async function run() {
@@ -13,29 +13,31 @@ async function run() {
   await new Promise((resolve, reject) => {
     const pipeline = chain([
       fs.createReadStream('example/data.json'),
-      parser({ streamKeys: false, streamStrings: false, streamNumbers: false }),
+      parser({ streamKeys: false, streamStrings: false, streamNumbers: false, streamValues: false }),
       ignore({
         filter: /\bculture\b/i
       }),
-      transformObject<any>({
-        mapFn: (obj, path) => {
+      map<any>({
+        mapFn: (value, path) => {
           if (path === 'categories')
             return {
-              action: 'replace', value: { id: obj.id + '!', title: obj.title, description: 'Noo' }
+              action: 'replace', value: { id: value.id + '!', title: value.title, description: 'Noo' }
             };
           else if (path === 'products') {
             // removes product with id 1
-            if (obj.id === '1')
+            if (value.id === '1')
               return { action: 'replace', value: undefined };
-            return { action: 'replace', value: { id: obj.id + ' ' + obj.id, title: obj.title } };
+            return { action: 'replace', value: { id: value.id + ' ' + value.id, title: value.title } };
           }
-          else
-            return { action: 'keep' };
+          else if (path === 'version') {
+            return { action: 'replace', value: value + 1 };
+          } else
+            return { action: 'no action' };
         }
       }),
       data => {
         counter++;
-        console.log('->', data);
+        // console.log('->', data);
         return data;
       },
       stringer({ useValues: true }),
