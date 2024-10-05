@@ -5,14 +5,21 @@
   "scripts": {
     "generate-data": "tsx example/generate_data.ts",
     "example": "tsx example/stream.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mocha --extension spec.ts"
   },
   "author": "Johan",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@types/stream-json": "^1.7.7",
+    "mocha": "^10.7.3",
     "stream-json": "^1.8.0",
     "tsx": "^4.19.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8"
+  },
+  "mocha": {
+    "node-option": ["import=tsx"]
   }
 }

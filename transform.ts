@@ -3,11 +3,11 @@ import { JsonToken } from "./types";
 import { assembleArrayStream, dissambleObjectIntoStream } from "./conversions";
 
 /**
- * Transform stream to be used with stream-json.
- * Expects an object and will call mapFn for each object in direct properties or in array
+ * Expects a json which consists of an object as root. For each child object it calls mapFn. 
+ * Also for objects in arrays where the array is a direct child to the root.
  * The object with be replaced or kept depending in response from mapFn.
  * NOTE: Not suitable for when child objects are really large since the entire object is kept in 
- * memory when passed to mapFn  
+ * memory when passed to mapFn. 
  */
 export function transformObject<T>(args: { 
     /**
@@ -53,13 +53,12 @@ export function transformObject<T>(args: {
                     let newbuffer;
                     if (result.action === 'replace') {
                         const { value } = result;   
-                        if (typeof value === 'object')
-                            newbuffer = await dissambleObjectIntoStream(value);
-                        else if (value === undefined)
+                        if (value === undefined)
                             newbuffer = [];
                         else if (value === null) 
                             newbuffer = [{ name: 'nullValue', value: null }];
-                        else throw new Error('Unhandled return value ' + value + ' from mapFn');
+                        else
+                            newbuffer = await dissambleObjectIntoStream(value);
                     }
                     else
                         newbuffer = buffer;
