@@ -4,8 +4,9 @@ import { memoryUsage } from 'process';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { stringer } from 'stream-json/Stringer';
-import { map } from '../map';
 import { ignore } from 'stream-json/filters/Ignore';
+
+import { MapTransform } from '../map-transform';
 
 async function run() {
   let counter = 0;
@@ -17,7 +18,7 @@ async function run() {
       ignore({
         filter: /\bculture\b/i
       }),
-      map<any>({
+      new MapTransform<any>({
         mapFn: (value, path) => {
           if (path === 'categories')
             return {
@@ -35,11 +36,6 @@ async function run() {
             return { action: 'no action' };
         }
       }),
-      data => {
-        counter++;
-        // console.log('->', data);
-        return data;
-      },
       stringer({ useValues: true }),
       // zlib.createGzip(),
       fs.createWriteStream('example/result.json'),

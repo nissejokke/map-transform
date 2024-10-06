@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
-import { map } from '../map';
+import { MapTransform } from '../map-transform';
 import { Readable } from 'stream';
 import Asm from 'stream-json/Assembler';
 
@@ -35,7 +35,7 @@ describe('transform', () => {
             const pipeline = chain([
                 Readable.from([JSON.stringify(indata)]),
                 parser({ streamKeys: false, streamStrings: false, streamNumbers: false, streamValues: false }),
-                map<any>({
+                new MapTransform<any>({
                     mapFn: (value, path) => {
                         if (path === 'products') {
                             if (value.id === 1)
@@ -59,11 +59,7 @@ describe('transform', () => {
                         } else
                             return { action: 'no action' };
                     }
-                }),
-                // not sure why this is needed
-                data => {
-                    return data;
-                }
+                })
             ]);
 
             const asm = Asm.connectTo(pipeline);
