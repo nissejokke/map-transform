@@ -4,7 +4,7 @@ import { memoryUsage } from 'process';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { stringer } from 'stream-json/Stringer';
-import { map } from '../transform';
+import { map } from '../map';
 import { ignore } from 'stream-json/filters/Ignore';
 
 async function run() {

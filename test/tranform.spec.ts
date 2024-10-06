@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
-import { map } from '../transform';
+import { map } from '../map';
 import { Readable } from 'stream';
 import Asm from 'stream-json/Assembler';
 
@@ -9,29 +9,31 @@ describe('transform', () => {
     let result;
 
     beforeEach(async () => {
+        const indata = {
+            products: [{
+                id: 1,
+                title: 'title 1',
+                description: 'description for product 1'
+            }, {
+                id: 2,
+                title: 'title 2',
+                description: 'description for product 2'
+            }, {
+                id: 3,
+                title: 'title 3',
+                description: 'description for product 3'
+            }],
+            version: 1,
+            created: "2024-10-05T00:00:00",
+            enabled: true,
+            latest: false,
+            createdBy: null,
+            updatedBy: undefined
+        };
+
         result = await new Promise<string>((resolve, reject) => {
             const pipeline = chain([
-                Readable.from([JSON.stringify({
-                    products: [{
-                        id: 1,
-                        title: 'title 1',
-                        description: 'description for product 1'
-                    }, {
-                        id: 2,
-                        title: 'title 2',
-                        description: 'description for product 2'
-                    }, {
-                        id: 3,
-                        title: 'title 3',
-                        description: 'description for product 3'
-                    }],
-                    version: 1,
-                    created: "2024-10-05T00:00:00",
-                    enabled: true,
-                    latest: false,
-                    createdBy: null,
-                    updatedBy: undefined
-                })]),
+                Readable.from([JSON.stringify(indata)]),
                 parser({ streamKeys: false, streamStrings: false, streamNumbers: false, streamValues: false }),
                 map<any>({
                     mapFn: (value, path) => {
@@ -41,9 +43,7 @@ describe('transform', () => {
                             else if (value.id === 3)
                                 return { action: 'replace', value: null };
                             return {
-                                action: 'replace', value: {
-                                    id: value.id, title: value.title + '!'
-                                }
+                                action: 'replace', value: { id: value.id, title: value.title + '!' }
                             };
                         }
                         else if (path === 'version') {
@@ -76,8 +76,7 @@ describe('transform', () => {
     });
 
     it('should transform object', async () => {
-
-        // act
+        // assert
         assert.deepEqual(result, {
             products: [{
                 id: '2',
@@ -88,7 +87,6 @@ describe('transform', () => {
             enabled: false,
             latest: true,
             createdBy: 'user'
-        })
-
+        });
     });
 });
