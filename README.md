@@ -1,4 +1,4 @@
-# stream-json map (custom stream-json transform stream)
+# MapTransform
 
 Map transform stream to be used with [stream-json](https://www.npmjs.com/package/stream-json). It can be used to transform values in large json. Basically a js map function but for streamed large json.
 
@@ -7,6 +7,59 @@ The value will be replaced or kept depending in response from mapFn.
 
 NOTE: Not suitable for when child objects are really large since the entire object is kept in 
 memory when passed to mapFn.
+
+## Example
+
+```typescript
+import { chain } from 'stream-chain';
+import { parser } from 'stream-json';
+import { MapTransform } from './map-transform';
+import Asm from 'stream-json/Assembler';
+
+const pipeline = chain([
+    /*
+        sample.json
+        {
+            "products": [{
+                "id": 1,
+                "title": "Product 1"
+            }]
+        }
+    */
+    fs.createReadStream('sample.json'),
+    parser({ streamKeys: false, streamStrings: false, streamNumbers: false, streamValues: false }),
+    new MapTransform<any>({
+        mapFn: (value, path) => {
+            if (path === 'products') {
+                return {
+                    action: 'replace', 
+                    value: { 
+                        id: value.id, 
+                        title: value.title + '!' 
+                    }
+                };
+            }
+            else
+                return { action: 'no action' };
+        }
+    })
+]);
+
+const asm = Asm.connectTo(pipeline);
+asm.on('done', asm => {
+    console.log(asm.current);
+});
+
+/* 
+    Logs:
+    {
+        "products": [{
+            "id": 1,
+            "title": "Product 1!"
+        }]
+    } 
+*/
+```
 
 ## How it works
 
